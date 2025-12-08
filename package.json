@@ -16,6 +16,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@icon/icofont": "^1.0.1-alpha.1",
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
     "node-fetch": "^3.3.2",
