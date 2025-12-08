@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "icon": "icofont-flash",
+        "title": "Energy",
+        "title2": "Transition",
+        "text": "Driving the shift to sustainable energy systems with expertise in renewable sources, grid modernization, and energy storage solutions.",
+        "btnLink": "https://www.rejlers.com/what-we-do/energy-transition/"
+    },
+    {
+        "id": 2,
+        "icon": "icofont-industries",
+        "title": "Industry",
+        "title2": "Transformation", 
+        "text": "Enabling resource-efficient and circular industrial production through cutting-edge technologies and sustainable engineering solutions.",
+        "btnLink": "https://www.rejlers.com/what-we-do/industry-transformation/"
+    },
+    {
+        "id": 3,
+        "icon": "icofont-building-alt",
+        "title": "Future-Proofing",
+        "title2": "Communities",
+        "text": "Supporting sustainable society development through climate-resilient infrastructure, smart cities, and digital transformation projects.",
+        "btnLink": "https://www.rejlers.com/what-we-do/future-proof-communities/"
+    },
+    {
+        "id": 4,
+        "icon": "icofont-engineer",
+        "title": "Process",
+        "title2": "Engineering",
+        "text": "Advanced process optimization and automation solutions for enhanced efficiency, safety, and environmental performance in industrial operations.",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 5,
+        "icon": "icofont-digital-marketing",
+        "title": "Digital",
+        "title2": "Solutions",
+        "text": "Innovative digital transformation services including IoT integration, data analytics, and smart system implementations for modern enterprises.",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 6,
+        "icon": "icofont-environment",
+        "title": "Environmental",
+        "title2": "Engineering",
+        "text": "Comprehensive environmental solutions focusing on climate adaptation, pollution control, and sustainable resource management practices.",
+        "btnLink": "/service-details"
+    }
+]

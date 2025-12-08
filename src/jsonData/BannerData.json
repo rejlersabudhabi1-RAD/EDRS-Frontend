@@ -1,0 +1,53 @@
+[
+    {
+        "id": 1,
+        "image": "slide1.jpg",
+        "subtitle": "HOME OF THE LEARNING MINDS",
+        "title": "POWERING THE ENERGY TRANSITION",
+        "highlight": "WITH AI-DRIVEN ENGINEERING",
+        "text": "Experience the future of engineering document management with EDRS - our intelligent platform revolutionizing P&ID workflows, automated validation, and project digitalization for the oil & gas industry.",
+        "stats": [
+            {"number": "80+", "label": "YEARS EXPERTISE"},
+            {"number": "15+", "label": "YEARS IN UAE"},
+            {"number": "AI", "label": "POWERED EDRS"}
+        ],
+        "btn1": "Launch EDRS Platform",
+        "btn1Link": "/login",
+        "btn2": "Explore Solutions",
+        "btn2Link": "/about"
+    },
+    {
+        "id": 2,
+        "image": "slide2.jpg",
+        "subtitle": "DRIVING SUSTAINABLE INDUSTRY",
+        "title": "DIGITAL TRANSFORMATION",
+        "highlight": "FOR CIRCULAR PRODUCTION",
+        "text": "From traditional engineering to AI-powered automation - we enable resource-efficient industrial production with cutting-edge digitalization, advanced P&ID management, and comprehensive project solutions.",
+        "stats": [
+            {"number": "100%", "label": "DIGITAL WORKFLOW"},
+            {"number": "24/7", "label": "CLOUD ACCESS"},
+            {"number": "99%", "label": "ACCURACY RATE"}
+        ],
+        "btn1": "Access Dashboard",
+        "btn1Link": "/login",
+        "btn2": "View Portfolio",
+        "btn2Link": "/service"
+    },
+    {
+        "id": 3,
+        "image": "slide1.jpg",
+        "subtitle": "FUTURE-PROOFING COMMUNITIES",
+        "title": "INTELLIGENT ENGINEERING",
+        "highlight": "SOLUTIONS ECOSYSTEM",
+        "text": "Building resilient infrastructure through advanced engineering digitalization. Our EDRS platform combines Nordic heritage with cutting-edge AI to deliver comprehensive engineering document management.",
+        "stats": [
+            {"number": "4", "label": "COUNTRIES"},
+            {"number": "500+", "label": "PROJECTS"},
+            {"number": "CLOUD", "label": "NATIVE EDRS"}
+        ],
+        "btn1": "Start Free Trial",
+        "btn1Link": "/login",
+        "btn2": "Contact Experts",
+        "btn2Link": "/contact"
+    }
+]

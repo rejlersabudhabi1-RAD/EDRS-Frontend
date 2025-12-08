@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "image": "s1.jpg",
+        "icon": "icofont-flash",
+        "title": "Energy Transition",
+        "text": "We guide the path to how energy is produced, transferred, and consumed. Our experts cover all fossil-free power sources and energy supply chain solutions.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 2,
+        "image": "s2.jpg",
+        "icon": "icofont-industries",
+        "title": "Industry Transformation",
+        "text": "Enabling the shift to resource-efficient and circular industrial production with broad expertise in the latest technologies and sustainable solutions.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 3,
+        "image": "s3.jpg",
+        "icon": "icofont-building-alt",
+        "title": "Future-Proofing Communities",
+        "text": "Supporting a sustainable society by driving projects in cities, infrastructure, and the built environment for climate-resilient communities.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 4,
+        "image": "s4.jpg",
+        "icon": "icofont-engineer",
+        "title": "Engineering Consulting",
+        "text": "Comprehensive engineering solutions from concept to completion. Our multidisciplinary expertise spans across all engineering domains to deliver innovative and sustainable solutions.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 5,
+        "image": "s5.jpg",
+        "icon": "icofont-industries",
+        "title": "Industrial Solutions",
+        "text": "Advanced mechanical and process engineering solutions for modern industries. Specializing in automation, optimization, and sustainable manufacturing processes.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 6,
+        "image": "s6.jpg",
+        "icon": "icofont-environment",
+        "title": "Environmental Engineering",
+        "text": "Sustainable environmental solutions focusing on climate adaptation, pollution control, and resource optimization for a cleaner future.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 7,
+        "image": "s7.jpg",
+        "icon": "icofont-digital-marketing",
+        "title": "Digital Solutions",
+        "text": "Cutting-edge digital transformation services including IoT, automation, and smart systems integration for modern engineering challenges.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    },
+    {
+        "id": 8,
+        "image": "s8.jpg",
+        "icon": "icofont-building-alt",
+        "title": "Infrastructure Development",
+        "text": "Comprehensive infrastructure solutions including roads, bridges, water systems, and urban planning for sustainable community development.",
+        "btn": "Learn More",
+        "btnLink": "/service-details"
+    }
+]

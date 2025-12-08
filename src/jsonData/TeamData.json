@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "image": "team-1.jpg",
+        "imageAlt": "jarmo-suominen.png",
+        "name": "Jarmo Suominen",
+        "title": "CEO, Rejlers Abu Dhabi / Senior VP, Middle East Region",
+        "email": "jarmo.suominen@rejlers.ae",
+        "phone": "+971 2 639 7449"
+    },
+    {
+        "id": 2,
+        "image": "team-2.jpg",
+        "imageAlt": "aleksi-murtomaki.png",
+        "name": "Aleksi Murtomaki",
+        "title": "CFO, Rejlers Abu Dhabi / Vice President, Finance & ICT",
+        "email": "uae.finance@rejlers.ae",
+        "phone": "+971 2 639 7449"
+    },
+    {
+        "id": 3,
+        "image": "team-3.jpg",
+        "imageAlt": "mohamad-el-ghawanmeh.png",
+        "name": "Mohamad El-Ghawanmeh",
+        "title": "Vice President / Head of Operations and Project Delivery",
+        "phone": "+971 2 639 7449"
+    },
+    {
+        "id": 4,
+        "image": "team-4.jpg",
+        "imageAlt": "anam-abbas.jpg",
+        "name": "Anam Abbas",
+        "title": "Vice President / Head of Sales & Business Development",
+        "email": "uae.sales@rejlers.ae",
+        "phone": "+971 2 639 7449"
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "70+ Years of Engineering Excellence",
+        "text": "With over seven decades of proven expertise, we deliver innovative solutions across energy transition, industry transformation, and future-proofing communities worldwide.",
+        "icon": "icofont-medal"
+    },
+    {
+        "id": 2,
+        "title": "Cutting-Edge Technology Solutions",
+        "text": "We leverage advanced AI, digital twins, and automation technologies to accelerate project delivery while ensuring the highest standards of safety and sustainability.",
+        "icon": "icofont-rocket-alt-2"
+    },
+    {
+        "id": 3,
+        "title": "Global Expertise, Local Presence",
+        "text": "Our multidisciplinary teams across Sweden, Finland, Norway, and UAE provide comprehensive support from concept to completion with 24/7 technical assistance.",
+        "icon": "icofont-support-faq"
+    }
+]

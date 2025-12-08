@@ -1,0 +1,350 @@
+/* Rejlers Brand Colors and Customizations */
+
+:root {
+  --rejlers-primary: #0066CC;
+  --rejlers-secondary: #003366;
+  --rejlers-accent: #00AAFF;
+  --rejlers-light: #F0F8FF;
+  --rejlers-text: #333333;
+  --rejlers-gray: #6B7280;
+}
+
+/* Override primary colors */
+.btn, 
+.read-more-btn a,
+.footer-contact-info-icon,
+.contact-info-icon {
+  background-color: var(--rejlers-primary) !important;
+}
+
+.btn:hover,
+.read-more-btn a:hover {
+  background-color: var(--rejlers-secondary) !important;
+}
+
+/* Header and navigation adjustments */
+.hd-sec {
+  background-color: rgba(255, 255, 255, 0.98);
+  border-bottom: 2px solid var(--rejlers-primary);
+}
+
+/* Banner overlay for better text readability */
+.slider-overlay {
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.7), rgba(0, 51, 102, 0.8));
+}
+
+/* Section titles */
+.sec-title h1,
+.latest-project-title h1 {
+  color: var(--rejlers-secondary);
+}
+
+.sec-title span,
+.latest-project-title span {
+  color: var(--rejlers-primary);
+  font-weight: 600;
+}
+
+/* Service cards hover effects */
+.service-inner:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 102, 204, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Team section */
+.team-sec-image {
+  background: linear-gradient(135deg, var(--rejlers-light), rgba(0, 102, 204, 0.1));
+}
+
+/* Footer customization */
+.footer {
+  background-color: var(--rejlers-secondary);
+}
+
+.footer-title-one {
+  color: var(--rejlers-accent) !important;
+}
+
+/* Call to action enhancement */
+.call-to-action-sec {
+  background: linear-gradient(135deg, var(--rejlers-primary), var(--rejlers-secondary));
+}
+
+/* Learning minds emphasis */
+.learning-minds-emphasis {
+  background: linear-gradient(90deg, var(--rejlers-primary), var(--rejlers-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Professional styling for testimonials */
+.single-testimonial {
+  border-left: 4px solid var(--rejlers-primary);
+  padding-left: 20px;
+}
+
+/* Rejlers-specific animations */
+@keyframes rejlersGlow {
+  0% { box-shadow: 0 0 5px var(--rejlers-primary); }
+  50% { box-shadow: 0 0 20px var(--rejlers-accent); }
+  100% { box-shadow: 0 0 5px var(--rejlers-primary); }
+}
+
+.rejlers-highlight {
+  animation: rejlersGlow 2s infinite;
+}
+
+/* Sustainability focus indicators */
+.sustainability-badge {
+  background: linear-gradient(45deg, #10B981, #059669);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+/* Authentication components styling */
+.auth-buttons .btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  margin: 0 0.25rem;
+}
+
+.user-menu .dropdown-menu {
+  background: white;
+  border: 1px solid var(--rejlers-primary);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+  z-index: 1050;
+}
+
+.user-menu .dropdown-item {
+  color: var(--rejlers-text);
+  transition: all 0.3s ease;
+}
+
+.user-menu .dropdown-item:hover {
+  background-color: var(--rejlers-light);
+  color: var(--rejlers-primary);
+}
+
+.user-menu .dropdown-item.text-danger:hover {
+  background-color: #ffe6e6;
+  color: #dc3545;
+}
+
+/* Advanced Login Page Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive login form improvements */
+@media (max-width: 1024px) {
+  .login-left-panel {
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-form-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .login-left-panel {
+    display: none;
+  }
+  
+  .login-form-container {
+    width: 100%;
+    max-width: none;
+    padding: 1rem;
+  }
+  
+  .login-form-card {
+    margin: 0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Professional form field enhancements */
+.form-field-icon {
+  transition: color 0.3s ease;
+}
+
+.form-input:focus + .form-field-icon {
+  color: #3b82f6;
+}
+
+.form-input {
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-slideIn {
+  animation: slideIn 1s ease-out;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Industry-specific gradient backgrounds */
+.bg-oil-gas-gradient {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #3b82f6 75%, #60a5fa 100%);
+}
+
+.bg-engineering-pattern {
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+  background-size: 100px 100px;
+}
+
+/* Professional form styling */
+.form-professional input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+.form-professional input:hover {
+  border-color: #93c5fd;
+}
+
+/* Button hover effects */
+.btn-engineering {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-engineering::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-engineering:hover::before {
+  left: 100%;
+}
+
+/* Industrial theme colors */
+.text-petroleum {
+  color: #1e40af;
+}
+
+.text-natural-gas {
+  color: #0ea5e9;
+}
+
+.text-offshore {
+  color: #0891b2;
+}
+
+.bg-petroleum {
+  background-color: #1e40af;
+}
+
+.bg-natural-gas {
+  background-color: #0ea5e9;
+}
+
+.bg-offshore {
+  background-color: #0891b2;
+}
+
+/* Security indicators */
+.security-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px;
+}
+
+.security-dot.active {
+  background-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.security-dot.standby {
+  background-color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.security-dot.inactive {
+  background-color: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}

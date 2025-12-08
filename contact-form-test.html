@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form Test - Rejlers EDRS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .status.working { background: #d4edda; color: #155724; }
+        .status.testing { background: #fff3cd; color: #856404; }
+        .auto-test {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🧪 Contact Form Test - Rejlers EDRS</h1>
+            <p>Testing the updated contact form with backend API integration</p>
+            <div>
+                <span class="status working">✅ API Working</span>
+                <span class="status working">✅ Validation Active</span>
+                <span class="status testing">🧪 Testing Mode</span>
+            </div>
+        </div>
+
+        <div class="auto-test">
+            <h3>🤖 Automated API Test</h3>
+            <button onclick="runAPITest()" id="testBtn">Run API Test</button>
+            <div id="testResults"></div>
+        </div>
+
+        <h2>📝 Manual Form Test</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                <div class="error-message" id="nameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" placeholder="your.email@company.com" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" placeholder="+971 XX XXX XXXX" required>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject *</label>
+                <input type="text" id="subject" name="subject" placeholder="Brief description of your inquiry" required>
+                <div class="error-message" id="subjectError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="projectType">Project Type *</label>
+                <select id="projectType" name="projectType" required>
+                    <option value="engineering-consulting">Engineering Consulting</option>
+                    <option value="energy-transition">Energy Transition</option>
+                    <option value="industry-transformation">Industry Transformation</option>
+                    <option value="future-proof-communities">Future-Proof Communities</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="error-message" id="projectTypeError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" name="message" rows="5" placeholder="Please describe your project requirements, timeline, and any specific questions... (minimum 20 characters)" required></textarea>
+                <div class="error-message" id="messageError"></div>
+            </div>
+
+            <button type="submit" id="submitBtn">Send Message</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Auto-fill form with test data
+        function fillTestData() {
+            document.getElementById('name').value = 'Mohammed Agra';
+            document.getElementById('email').value = 'mohammed.agra@rejlers.ae';
+            document.getElementById('phone').value = '+971 2 639 7449';
+            document.getElementById('subject').value = 'EDRS Contact Form Testing';
+            document.getElementById('projectType').value = 'engineering-consulting';
+            document.getElementById('message').value = 'This is a test message to verify the contact form functionality is working properly with the backend API integration. The form includes validation, error handling, and success feedback.';
+        }
+
+        // Clear all error messages
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(el => el.textContent = '');
+        }
+
+        // Show validation errors
+        function showErrors(errors) {
+            clearErrors();
+            Object.keys(errors).forEach(field => {
+                const errorEl = document.getElementById(field + 'Error');
+                if (errorEl) {
+                    errorEl.textContent = errors[field];
+                }
+            });
+        }
+
+        // Show result message
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+        }
+
+        // Run automated API test
+        async function runAPITest() {
+            const testBtn = document.getElementById('testBtn');
+            const resultsDiv = document.getElementById('testResults');
+            
+            testBtn.disabled = true;
+            testBtn.textContent = 'Testing...';
+            resultsDiv.innerHTML = '<div class="info">Running API tests...</div>';
+
+            const testData = {
+                name: 'API Test User',
+                email: 'api.test@rejlers.ae',
+                phone: '+971 50 123 4567',
+                subject: 'Automated API Test',
+                projectType: 'engineering-consulting',
+                message: 'This is an automated test message to verify the API endpoint is working correctly with proper validation and response handling.'
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/ai-erp/api/consultation/submit/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ API Test Successful!<br>
+                            Reference: ${result.reference}<br>
+                            Message: ${result.message}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="error">
+                            ❌ API Test Failed<br>
+                            Status: ${response.status}<br>
+                            Error: ${result.message || 'Unknown error'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        💥 Connection Error: ${error.message}<br>
+                        Check if backend server is running on port 8000
+                    </div>
+                `;
+            }
+
+            testBtn.disabled = false;
+            testBtn.textContent = 'Run API Test';
+        }
+
+        // Handle form submission
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            
+            clearErrors();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('http://localhost:8000/ai-erp/api/consultation/submit/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showResult(`✅ Success! ${result.message} Reference: ${result.reference}`, 'success');
+                    e.target.reset();
+                } else {
+                    if (result.errors) {
+                        showErrors(result.errors);
+                        showResult('❌ Please correct the validation errors above', 'error');
+                    } else {
+                        showResult(`❌ Error: ${result.message || 'Failed to send message'}`, 'error');
+                    }
+                }
+            } catch (error) {
+                showResult(`💥 Connection Error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            }
+        });
+
+        // Auto-fill test data on load
+        window.addEventListener('load', function() {
+            fillTestData();
+            // Auto-run API test
+            setTimeout(runAPITest, 1000);
+        });
+    </script>
+</body>
+</html>

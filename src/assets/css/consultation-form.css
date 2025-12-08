@@ -1,0 +1,243 @@
+/* Enhanced Consultation Form Styles */
+.consultation-form {
+  position: relative;
+}
+
+.consultation-subtitle {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+/* Input with icons */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.message-icon {
+  top: 20px;
+  transform: none;
+}
+
+.input-with-icon input,
+.input-with-icon select,
+.input-with-icon textarea {
+  padding-left: 40px !important;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.input-with-icon textarea {
+  padding-top: 12px !important;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.input-with-icon input:focus,
+.input-with-icon select:focus,
+.input-with-icon textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Error states */
+.input-with-icon input.error,
+.input-with-icon select.error,
+.input-with-icon textarea.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.error-message {
+  display: block;
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+/* Submit button enhancements */
+.submit-btn {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 30px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn.submitting {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+}
+
+/* Spinner animation */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Contact info footer */
+.contact-info-footer {
+  border: 1px solid #dee2e6;
+  background: rgba(248, 249, 250, 0.8) !important;
+  border-radius: 10px !important;
+  font-size: 0.85rem;
+}
+
+.contact-info-footer h6 {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.contact-info-footer p {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+/* Form field spacing */
+.single-input-field {
+  margin-bottom: 1.2rem;
+}
+
+/* Select field specific styling */
+.input-with-icon select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .input-with-icon input,
+  .input-with-icon select,
+  .input-with-icon textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .consultation-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .contact-info-footer {
+    font-size: 0.8rem;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 14px 20px;
+  }
+}
+
+/* Loading state */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Success/Error toast customizations */
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+/* Form validation feedback */
+.field-valid .input-with-icon input,
+.field-valid .input-with-icon select,
+.field-valid .input-with-icon textarea {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Enhanced focus states */
+.input-with-icon input:focus + .input-icon,
+.input-with-icon select:focus + .input-icon,
+.input-with-icon textarea:focus + .input-icon {
+  color: #007bff;
+}
+
+/* Placeholder styling */
+.input-with-icon input::placeholder,
+.input-with-icon textarea::placeholder {
+  color: #6c757d;
+  opacity: 0.8;
+}
+
+/* Form container enhancements */
+.about-us-contact {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  background: white;
+  border: 1px solid #e9ecef;
+}
+
+.about-us-contact-title h1 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.contact-title-border {
+  height: 3px;
+  width: 60px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
