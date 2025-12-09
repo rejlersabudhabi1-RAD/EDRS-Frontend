@@ -49,6 +49,7 @@ const DocumentUploadModule = () => {
                     formData.append('analysis_type', 'classification');
                     
                     toast.info(`Processing: ${file.name}`);
+                    toast.info('⏱️ P&ID analysis may take 1-3 minutes...');
                     
                     // Build headers conditionally
                     const headers = {};
@@ -56,11 +57,18 @@ const DocumentUploadModule = () => {
                         headers['Authorization'] = `Bearer ${token}`;
                     }
                     
+                    // Create AbortController for timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes
+                    
                     const response = await fetch(API_CONFIG.getEndpoint('DOCUMENT_UPLOAD_REPORT'), {
                         method: 'POST',
                         headers: headers,
-                        body: formData
+                        body: formData,
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
                     
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -70,6 +78,9 @@ const DocumentUploadModule = () => {
                     const result = await response.json();
                     
                     if (result.success) {
+                        const isPID = result.analysis_result?.is_pid_document || false;
+                        const pidData = result.analysis_result?.pid_analysis || {};
+                        
                         results.push({
                             fileName: file.name,
                             status: 'Success',
@@ -81,7 +92,13 @@ const DocumentUploadModule = () => {
                             size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
                             report: result.report,
                             reportId: result.report?.report_id,
-                            analysisResult: result.analysis_result
+                            analysisResult: result.analysis_result,
+                            isPID: isPID,
+                            tagsFound: pidData.tags_found || 0,
+                            valuesFound: pidData.values_found || 0,
+                            componentsCount: pidData.components_detailed?.length || 0,
+                            complianceStatus: pidData.compliance_summary || 'N/A',
+                            riskLevel: pidData.risk_summary?.overall_risk_level || 'N/A'
                         });
                         
                         toast.success(`✅ ${file.name} processed successfully!`);
@@ -91,16 +108,24 @@ const DocumentUploadModule = () => {
                     
                 } catch (fileError) {
                     console.error(`Error processing ${file.name}:`, fileError);
+                    
+                    let errorMessage = fileError.message;
+                    if (fileError.name === 'AbortError') {
+                        errorMessage = 'Processing timeout (5 min) - Check backend logs';
+                        toast.warning(`⏱️ ${file.name} timed out - Analysis may still be running in background`);
+                    } else {
+                        toast.error(`❌ ${file.name} processing failed: ${fileError.message}`);
+                    }
+                    
                     results.push({
                         fileName: file.name,
                         status: 'Failed',
-                        error: fileError.message,
+                        error: errorMessage,
                         confidence: 'N/A',
                         category: 'Error',
                         processingTime: 'N/A',
                         size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
                     });
-                    toast.error(`❌ ${file.name} processing failed: ${fileError.message}`);
                 }
             }
             
@@ -576,8 +601,11 @@ const DocumentUploadModule = () => {
                                     <p style={{ color: '#1f2937', fontWeight: '500', marginBottom: '0.5rem' }}>
                                         🤖 AI Processing Documents...
                                     </p>
-                                    <p style={{ color: '#6b7280', fontSize: '14px' }}>
+                                    <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '0.5rem' }}>
                                         Analyzing content with OpenAI GPT-4 and generating comprehensive reports
+                                    </p>
+                                    <p style={{ color: '#10b981', fontSize: '13px', fontWeight: '500' }}>
+                                        ⏱️ P&ID Analysis: 60-180 seconds (Component extraction, compliance checking, risk assessment)
                                     </p>
                                 </div>
                             )}
@@ -656,6 +684,54 @@ const DocumentUploadModule = () => {
                                                         <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>{result.size}</div>
                                                     </div>
                                                 </div>
+                                                
+                                                {/* P&ID Specific Information */}
+                                                {result.isPID && (
+                                                    <div style={{ 
+                                                        marginTop: '1rem', 
+                                                        padding: '1rem', 
+                                                        background: '#ecfdf5', 
+                                                        borderRadius: '8px',
+                                                        border: '1px solid #10b981'
+                                                    }}>
+                                                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#059669', marginBottom: '0.75rem' }}>
+                                                            <i className="fas fa-diagram-project" style={{ marginRight: '0.5rem' }}></i>
+                                                            P&ID Analysis Results
+                                                        </div>
+                                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem' }}>
+                                                            <div>
+                                                                <div style={{ fontSize: '11px', color: '#047857' }}>Tags Found</div>
+                                                                <div style={{ fontSize: '16px', fontWeight: '600', color: '#059669' }}>{result.tagsFound || 0}</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: '11px', color: '#047857' }}>Values Extracted</div>
+                                                                <div style={{ fontSize: '16px', fontWeight: '600', color: '#059669' }}>{result.valuesFound || 0}</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: '11px', color: '#047857' }}>Components</div>
+                                                                <div style={{ fontSize: '16px', fontWeight: '600', color: '#059669' }}>{result.componentsCount || 0}</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: '11px', color: '#047857' }}>Risk Level</div>
+                                                                <div style={{ 
+                                                                    fontSize: '14px', 
+                                                                    fontWeight: '600', 
+                                                                    color: result.riskLevel === 'HIGH' ? '#dc2626' : 
+                                                                           result.riskLevel === 'MEDIUM' ? '#ea580c' : '#10b981'
+                                                                }}>
+                                                                    {result.riskLevel || 'N/A'}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {result.complianceStatus && result.complianceStatus !== 'N/A' && (
+                                                            <div style={{ marginTop: '0.75rem', fontSize: '12px', color: '#047857' }}>
+                                                                <i className="fas fa-shield-alt" style={{ marginRight: '0.5rem' }}></i>
+                                                                Compliance: {result.complianceStatus}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                
                                                 {result.error && (
                                                     <div style={{ 
                                                         marginTop: '1rem', 
@@ -770,16 +846,68 @@ const DocumentUploadModule = () => {
                                     </button>
                                 </div>
                                 <div style={{ padding: '2rem' }}>
-                                    <pre style={{
-                                        background: '#f9fafb',
-                                        padding: '1.5rem',
-                                        borderRadius: '8px',
-                                        overflow: 'auto',
-                                        fontSize: '12px',
-                                        lineHeight: '1.5'
-                                    }}>
-                                        {JSON.stringify(selectedReport.report.report_data, null, 2)}
-                                    </pre>
+                                    {selectedReport.isPID && selectedReport.analysisResult?.pid_analysis ? (
+                                        <div>
+                                            {/* P&ID Analysis Summary */}
+                                            <div style={{ marginBottom: '2rem' }}>
+                                                <h4 style={{ margin: '0 0 1rem 0', fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
+                                                    <i className="fas fa-chart-line" style={{ color: '#10b981', marginRight: '0.5rem' }}></i>
+                                                    Analysis Summary
+                                                </h4>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                                    <div style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #10b981' }}>
+                                                        <div style={{ fontSize: '12px', color: '#047857', marginBottom: '0.25rem' }}>Equipment Tags</div>
+                                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#059669' }}>{selectedReport.tagsFound || 0}</div>
+                                                    </div>
+                                                    <div style={{ padding: '1rem', background: '#eff6ff', borderRadius: '8px', border: '1px solid #3b82f6' }}>
+                                                        <div style={{ fontSize: '12px', color: '#1e40af', marginBottom: '0.25rem' }}>Process Values</div>
+                                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#2563eb' }}>{selectedReport.valuesFound || 0}</div>
+                                                    </div>
+                                                    <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '8px', border: '1px solid #f59e0b' }}>
+                                                        <div style={{ fontSize: '12px', color: '#92400e', marginBottom: '0.25rem' }}>Components</div>
+                                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#d97706' }}>{selectedReport.componentsCount || 0}</div>
+                                                    </div>
+                                                    <div style={{ padding: '1rem', background: '#fef2f2', borderRadius: '8px', border: '1px solid #ef4444' }}>
+                                                        <div style={{ fontSize: '12px', color: '#991b1b', marginBottom: '0.25rem' }}>Risk Level</div>
+                                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#dc2626' }}>{selectedReport.riskLevel || 'N/A'}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Tabs for different sections */}
+                                            <div style={{ marginBottom: '1rem', borderBottom: '2px solid #e5e7eb' }}>
+                                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                                    <button style={{ padding: '0.5rem 1rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px 6px 0 0', fontWeight: '500', fontSize: '14px' }}>
+                                                        Full Report
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Full JSON Report */}
+                                            <pre style={{
+                                                background: '#f9fafb',
+                                                padding: '1.5rem',
+                                                borderRadius: '8px',
+                                                overflow: 'auto',
+                                                fontSize: '12px',
+                                                lineHeight: '1.5',
+                                                maxHeight: '500px'
+                                            }}>
+                                                {JSON.stringify(selectedReport.report.report_data, null, 2)}
+                                            </pre>
+                                        </div>
+                                    ) : (
+                                        <pre style={{
+                                            background: '#f9fafb',
+                                            padding: '1.5rem',
+                                            borderRadius: '8px',
+                                            overflow: 'auto',
+                                            fontSize: '12px',
+                                            lineHeight: '1.5'
+                                        }}>
+                                            {JSON.stringify(selectedReport.report.report_data, null, 2)}
+                                        </pre>
+                                    )}
                                 </div>
                             </div>
                         </div>
