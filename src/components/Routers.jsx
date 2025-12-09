@@ -129,18 +129,10 @@ const Routers = () => {
                         <DocumentValidationModule />
                     </ProtectedRoute>
                 }></Route>
-                <Route path="/edrs/document-upload" element={
-                    <ProtectedRoute>
-                        <DocumentUploadModule />
-                    </ProtectedRoute>
-                }></Route>
+                <Route path="/edrs/document-upload" element={<DocumentUploadModule />}></Route>
                 
-                {/* Direct Document Upload Route */}
-                <Route path="/document-upload" element={
-                    <ProtectedRoute>
-                        <DocumentUploadModule />
-                    </ProtectedRoute>
-                }></Route>
+                {/* Direct Document Upload Route - Allow anonymous access */}
+                <Route path="/document-upload" element={<DocumentUploadModule />}></Route>
                 
                 {/* Direct Document Validation Route */}
                 <Route path="/document-validation" element={
