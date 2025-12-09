@@ -22,7 +22,7 @@ import LandingPage from './LandingPage';
 import EdrsDashboard from './edrs/EdrsDashboard';
 import PdfToPidModule from './edrs/PdfToPidModule';
 import DocumentValidationModule from './edrs/DocumentValidationModule';
-import DocumentUploadModule from './edrs/DocumentUploadModuleAdvanced';
+import DocumentUploadModule from './edrs/DocumentUploadModuleSimple';
 import AIDashboard from './AIDashboard';
 
 import AIProcessingModule from './edrs/AIProcessingModule';
