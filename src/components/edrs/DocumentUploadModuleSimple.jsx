@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import API_CONFIG from '../../config/api';
+import UPLOAD_CONFIG from '../../config/upload.config';
 
 const DocumentUploadModule = () => {
     const navigate = useNavigate();
@@ -40,35 +41,57 @@ const DocumentUploadModule = () => {
             // Get authentication token (optional - API now allows anonymous access)
             const token = localStorage.getItem('authToken') || localStorage.getItem('token');
             
-            // Process each file
+            // Process each file with retry mechanism
             for (const file of uploadedFiles) {
-                try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('report_format', reportFormat);
-                    formData.append('analysis_type', 'classification');
-                    
-                    toast.info(`Processing: ${file.name}`);
-                    toast.info('⏱️ P&ID analysis may take 1-3 minutes...');
-                    
-                    // Build headers conditionally
-                    const headers = {};
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
-                    
-                    // Create AbortController for timeout
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes
-                    
-                    const response = await fetch(API_CONFIG.getEndpoint('DOCUMENT_UPLOAD_REPORT'), {
-                        method: 'POST',
-                        headers: headers,
-                        body: formData,
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
+                let retryCount = 0;
+                let lastError = null;
+                
+                // Detect if file is P&ID
+                const isPID = UPLOAD_CONFIG.isPIDFile(file.name);
+                
+                // Calculate dynamic timeout
+                const dynamicTimeout = UPLOAD_CONFIG.calculateTimeout(file.size, isPID);
+                const timeoutDesc = UPLOAD_CONFIG.getTimeoutDescription(dynamicTimeout);
+                const processingEstimate = UPLOAD_CONFIG.getProcessingEstimate(file.size, isPID);
+                
+                while (retryCount <= UPLOAD_CONFIG.MAX_RETRIES) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('report_format', reportFormat);
+                        formData.append('analysis_type', 'classification');
+                        
+                        if (retryCount === 0) {
+                            toast.info(`Processing: ${file.name}`);
+                            toast.info(`⏱️ ${processingEstimate} (timeout: ${timeoutDesc})`, { autoClose: 8000 });
+                        } else {
+                            toast.warning(`🔄 Retry ${retryCount}/${UPLOAD_CONFIG.MAX_RETRIES} for ${file.name}`);
+                        }
+                        
+                        // Build headers conditionally
+                        const headers = {};
+                        if (token) {
+                            headers['Authorization'] = `Bearer ${token}`;
+                        }
+                        
+                        // Create AbortController with dynamic timeout
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => {
+                            controller.abort();
+                            console.log(`Timeout triggered after ${timeoutDesc} for ${file.name}`);
+                        }, dynamicTimeout);
+                        
+                        const response = await fetch(API_CONFIG.getEndpoint('DOCUMENT_UPLOAD_REPORT'), {
+                            method: 'POST',
+                            headers: headers,
+                            body: formData,
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId);
+                        
+                        // Success - break retry loop
+                        retryCount = UPLOAD_CONFIG.MAX_RETRIES + 1;
                     
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -106,26 +129,70 @@ const DocumentUploadModule = () => {
                         throw new Error(result.error || 'Processing failed');
                     }
                     
-                } catch (fileError) {
-                    console.error(`Error processing ${file.name}:`, fileError);
-                    
-                    let errorMessage = fileError.message;
-                    if (fileError.name === 'AbortError') {
-                        errorMessage = 'Processing timeout (5 min) - Check backend logs';
-                        toast.warning(`⏱️ ${file.name} timed out - Analysis may still be running in background`);
-                    } else {
-                        toast.error(`❌ ${file.name} processing failed: ${fileError.message}`);
+                    } catch (fileError) {
+                        console.error(`Error processing ${file.name} (attempt ${retryCount + 1}):`, fileError);
+                        lastError = fileError;
+                        
+                        // Handle different error types
+                        if (fileError.name === 'AbortError') {
+                            // Timeout error - retry if attempts remain
+                            if (retryCount < UPLOAD_CONFIG.MAX_RETRIES) {
+                                retryCount++;
+                                toast.info(`⏱️ Timeout after ${timeoutDesc}. Retrying with extended timeout...`);
+                                await new Promise(resolve => setTimeout(resolve, UPLOAD_CONFIG.RETRY_DELAY));
+                                continue; // Retry
+                            } else {
+                                // Max retries reached
+                                const errorMessage = `Processing timeout (${timeoutDesc}) - Check backend logs or try smaller file`;
+                                toast.error(`❌ ${file.name}: ${errorMessage}`);
+                                toast.info(`💡 Tip: Analysis may complete in background. Check /edrs/dashboard later.`, { autoClose: 10000 });
+                                
+                                results.push({
+                                    fileName: file.name,
+                                    status: 'Timeout',
+                                    error: errorMessage,
+                                    confidence: 'N/A',
+                                    category: 'Timeout',
+                                    processingTime: `>${timeoutDesc}`,
+                                    size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+                                });
+                                break; // Exit retry loop
+                            }
+                        } else if (fileError.message.includes('NetworkError') || fileError.message.includes('Failed to fetch')) {
+                            // Network error - retry
+                            if (retryCount < UPLOAD_CONFIG.MAX_RETRIES) {
+                                retryCount++;
+                                toast.warning(`🌐 Network issue. Retrying in ${UPLOAD_CONFIG.RETRY_DELAY / 1000}s...`);
+                                await new Promise(resolve => setTimeout(resolve, UPLOAD_CONFIG.RETRY_DELAY));
+                                continue; // Retry
+                            } else {
+                                toast.error(`❌ ${file.name}: Network error after ${UPLOAD_CONFIG.MAX_RETRIES} retries`);
+                                results.push({
+                                    fileName: file.name,
+                                    status: 'Network Error',
+                                    error: 'Network connection failed',
+                                    confidence: 'N/A',
+                                    category: 'Network Error',
+                                    processingTime: 'N/A',
+                                    size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+                                });
+                                break; // Exit retry loop
+                            }
+                        } else {
+                            // Other errors - don't retry
+                            toast.error(`❌ ${file.name} processing failed: ${fileError.message}`);
+                            results.push({
+                                fileName: file.name,
+                                status: 'Failed',
+                                error: fileError.message,
+                                confidence: 'N/A',
+                                category: 'Error',
+                                processingTime: 'N/A',
+                                size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+                            });
+                            break; // Exit retry loop
+                        }
                     }
-                    
-                    results.push({
-                        fileName: file.name,
-                        status: 'Failed',
-                        error: errorMessage,
-                        confidence: 'N/A',
-                        category: 'Error',
-                        processingTime: 'N/A',
-                        size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
-                    });
                 }
             }
             
@@ -605,7 +672,10 @@ const DocumentUploadModule = () => {
                                         Analyzing content with OpenAI GPT-4 and generating comprehensive reports
                                     </p>
                                     <p style={{ color: '#10b981', fontSize: '13px', fontWeight: '500' }}>
-                                        ⏱️ P&ID Analysis: 60-180 seconds (Component extraction, compliance checking, risk assessment)
+                                        ⏱️ Dynamic timeout based on file size • Auto-retry on timeout • Progress tracking
+                                    </p>
+                                    <p style={{ color: '#6b7280', fontSize: '12px', marginTop: '0.5rem' }}>
+                                        Small files (1-3 min) • Large P&IDs (4-10 min) • Max 2 retries
                                     </p>
                                 </div>
                             )}
@@ -655,7 +725,9 @@ const DocumentUploadModule = () => {
                                         border: '1px solid #e5e7eb',
                                         borderRadius: '8px',
                                         padding: '1.5rem',
-                                        background: result.status === 'Success' ? '#f0fdf4' : '#fef2f2'
+                                        background: result.status === 'Success' ? '#f0fdf4' : 
+                                                   result.status === 'Timeout' ? '#fef3c7' : 
+                                                   result.status === 'Network Error' ? '#fee2e2' : '#fef2f2'
                                     }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                                             <div style={{ flex: 1 }}>
