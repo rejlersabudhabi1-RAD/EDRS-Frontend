@@ -5,16 +5,17 @@
 
 const UPLOAD_CONFIG = {
     // Base timeout settings (in milliseconds)
-    BASE_TIMEOUT: 120000, // 2 minutes base
+    // Backend now supports 15 minutes (Gunicorn + Nginx = 900s)
+    BASE_TIMEOUT: 180000, // 3 minutes base (increased from 2)
     
     // Dynamic timeout calculation factors
-    TIMEOUT_PER_MB: 30000, // 30 seconds per MB
-    MIN_TIMEOUT: 60000, // 1 minute minimum
-    MAX_TIMEOUT: 600000, // 10 minutes maximum
+    TIMEOUT_PER_MB: 45000, // 45 seconds per MB (increased from 30)
+    MIN_TIMEOUT: 120000, // 2 minutes minimum (increased from 1)
+    MAX_TIMEOUT: 900000, // 15 minutes maximum (increased from 10, matches backend)
     
-    // P&ID specific timeouts (longer processing)
-    PID_BASE_TIMEOUT: 180000, // 3 minutes for P&ID
-    PID_TIMEOUT_PER_MB: 60000, // 1 minute per MB for P&ID
+    // P&ID specific timeouts (longer processing - comprehensive AI analysis)
+    PID_BASE_TIMEOUT: 300000, // 5 minutes for P&ID (increased from 3)
+    PID_TIMEOUT_PER_MB: 90000, // 1.5 minutes per MB for P&ID (increased from 1)
     
     // Retry settings
     MAX_RETRIES: 2,
