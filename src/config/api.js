@@ -70,6 +70,14 @@ const API_CONFIG = {
         
         // Team
         TEAM: '/team/',
+        
+        // AI Services (AI-ERP)
+        PDF_TO_PID: '/ai-erp/api/ai/pdf-to-pid-conversion/',
+        DOCUMENT_CLASSIFICATION: '/ai-erp/api/ai/document-classification/',
+        DOCUMENT_VALIDATION: '/ai-erp/api/ai/document-validation/',
+        DOCUMENT_UPLOAD_REPORT: '/ai-erp/api/ai/document-upload-report/',
+        BULK_PROCESSING: '/ai-erp/api/ai/bulk-processing/',
+        AI_SERVICE_STATUS: '/ai-erp/api/ai/service-status/',
     },
     
     // Get full endpoint URL

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import API_CONFIG from '../../config/api';
 
 const DocumentUploadModule = () => {
     const navigate = useNavigate();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [processing, setProcessing] = useState(false);
+    const [processingResults, setProcessingResults] = useState([]);
+    const [selectedReport, setSelectedReport] = useState(null);
+    const [reportFormat, setReportFormat] = useState('json');
     const [processingStats, setProcessingStats] = useState({
         totalUploaded: 1247,
         successRate: 97.8,
@@ -16,6 +20,7 @@ const DocumentUploadModule = () => {
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files);
         setUploadedFiles(files);
+        setProcessingResults([]); // Clear previous results
         toast.success(`${files.length} file(s) uploaded successfully`);
     };
 
@@ -26,29 +31,145 @@ const DocumentUploadModule = () => {
         }
         
         setProcessing(true);
-        toast.info('🤖 Starting AI-powered document processing...');
+        setProcessingResults([]);
+        toast.info('🤖 Starting AI-powered document analysis and report generation...');
+        
+        const results = [];
         
         try {
-            // Simulate AI processing
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Get authentication token
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
             
-            const results = uploadedFiles.map((file, index) => ({
-                id: index + 1,
-                fileName: file.name,
-                status: 'Processed',
-                confidence: Math.floor(Math.random() * 10) + 90 + '%',
-                category: ['Technical Document', 'Safety Report', 'Process Manual', 'Compliance Document'][Math.floor(Math.random() * 4)],
-                processingTime: (Math.random() * 2 + 0.5).toFixed(1) + 's',
-                size: (file.size / 1024 / 1024).toFixed(1) + 'MB'
-            }));
+            if (!token) {
+                toast.error('Authentication required. Please login.');
+                setProcessing(false);
+                return;
+            }
             
+            // Process each file
+            for (const file of uploadedFiles) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('report_format', reportFormat);
+                    formData.append('analysis_type', 'classification');
+                    
+                    toast.info(`Processing: ${file.name}`);
+                    
+                    const response = await fetch(API_CONFIG.getEndpoint('DOCUMENT_UPLOAD_REPORT'), {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Upload failed');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        results.push({
+                            fileName: file.name,
+                            status: 'Success',
+                            confidence: result.analysis_result?.classification?.confidence_score 
+                                ? `${(result.analysis_result.classification.confidence_score * 100).toFixed(1)}%` 
+                                : 'N/A',
+                            category: result.analysis_result?.classification?.primary_type || 'Unknown',
+                            processingTime: result.analysis_result?.processing_time || 'N/A',
+                            size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+                            report: result.report,
+                            reportId: result.report?.report_id,
+                            analysisResult: result.analysis_result
+                        });
+                        
+                        toast.success(`✅ ${file.name} processed successfully!`);
+                    } else {
+                        throw new Error(result.error || 'Processing failed');
+                    }
+                    
+                } catch (fileError) {
+                    console.error(`Error processing ${file.name}:`, fileError);
+                    results.push({
+                        fileName: file.name,
+                        status: 'Failed',
+                        error: fileError.message,
+                        confidence: 'N/A',
+                        category: 'Error',
+                        processingTime: 'N/A',
+                        size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
+                    });
+                    toast.error(`❌ ${file.name} processing failed: ${fileError.message}`);
+                }
+            }
+            
+            setProcessingResults(results);
             setProcessing(false);
-            toast.success(`🎉 AI processing completed! ${results.length} files processed successfully`);
+            
+            const successCount = results.filter(r => r.status === 'Success').length;
+            const failCount = results.length - successCount;
+            
+            if (successCount > 0) {
+                toast.success(`🎉 Processing complete! ${successCount} file(s) processed successfully${failCount > 0 ? `, ${failCount} failed` : ''}`);
+            } else {
+                toast.error('❌ All documents failed to process');
+            }
             
         } catch (error) {
             console.error('AI processing error:', error);
             setProcessing(false);
             toast.error('🔥 AI processing failed: ' + error.message);
+        }
+    };
+    
+    const viewReport = (result) => {
+        setSelectedReport(result);
+    };
+    
+    const downloadReport = (result) => {
+        if (!result.report) return;
+        
+        const reportData = result.report.report_data;
+        
+        if (reportFormat === 'json') {
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${result.reportId || 'report'}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('Report downloaded!');
+        } else if (reportFormat === 'html' && result.report.html_content) {
+            // Download as HTML
+            const blob = new Blob([result.report.html_content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${result.reportId || 'report'}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('Report downloaded!');
+        } else if (reportFormat === 'pdf' && result.report.pdf_base64) {
+            // Download as PDF
+            const byteCharacters = atob(result.report.pdf_base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${result.reportId || 'report'}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+            toast.success('Report downloaded!');
         }
     };
 
@@ -458,12 +579,213 @@ const DocumentUploadModule = () => {
                                         🤖 AI Processing Documents...
                                     </p>
                                     <p style={{ color: '#6b7280', fontSize: '14px' }}>
-                                        Analyzing content with OpenAI GPT-4
+                                        Analyzing content with OpenAI GPT-4 and generating comprehensive reports
                                     </p>
                                 </div>
                             )}
                         </div>
                     </div>
+
+                    {/* Processing Results */}
+                    {processingResults.length > 0 && (
+                        <div style={{
+                            background: 'white',
+                            padding: '2rem',
+                            borderRadius: '12px',
+                            border: '1px solid #e5e7eb',
+                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                            marginTop: '2rem'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                                    <i className="fas fa-check-circle" style={{ color: '#10b981', marginRight: '0.5rem' }}></i>
+                                    Processing Results ({processingResults.length})
+                                </h3>
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                    <label style={{ fontSize: '14px', color: '#6b7280' }}>
+                                        Report Format:
+                                        <select 
+                                            value={reportFormat} 
+                                            onChange={(e) => setReportFormat(e.target.value)}
+                                            style={{
+                                                marginLeft: '0.5rem',
+                                                padding: '0.5rem',
+                                                borderRadius: '6px',
+                                                border: '1px solid #d1d5db',
+                                                fontSize: '14px'
+                                            }}
+                                        >
+                                            <option value="json">JSON</option>
+                                            <option value="html">HTML</option>
+                                            <option value="pdf">PDF</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {processingResults.map((result, index) => (
+                                    <div key={index} style={{
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '8px',
+                                        padding: '1.5rem',
+                                        background: result.status === 'Success' ? '#f0fdf4' : '#fef2f2'
+                                    }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                                                    <i className={`fas ${result.status === 'Success' ? 'fa-check-circle' : 'fa-times-circle'}`} 
+                                                       style={{ color: result.status === 'Success' ? '#10b981' : '#ef4444', fontSize: '18px' }}></i>
+                                                    <span style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
+                                                        {result.fileName}
+                                                    </span>
+                                                </div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginTop: '0.75rem' }}>
+                                                    <div>
+                                                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Category</div>
+                                                        <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>{result.category}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Confidence</div>
+                                                        <div style={{ fontSize: '14px', fontWeight: '500', color: '#10b981' }}>{result.confidence}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Processing Time</div>
+                                                        <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>{result.processingTime}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Size</div>
+                                                        <div style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>{result.size}</div>
+                                                    </div>
+                                                </div>
+                                                {result.error && (
+                                                    <div style={{ 
+                                                        marginTop: '1rem', 
+                                                        padding: '0.75rem', 
+                                                        background: '#fee2e2', 
+                                                        borderRadius: '6px',
+                                                        fontSize: '14px',
+                                                        color: '#991b1b'
+                                                    }}>
+                                                        <i className="fas fa-exclamation-triangle" style={{ marginRight: '0.5rem' }}></i>
+                                                        {result.error}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {result.report && (
+                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                    <button
+                                                        onClick={() => viewReport(result)}
+                                                        style={{
+                                                            background: '#3b82f6',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '0.5rem 1rem',
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            fontWeight: '500',
+                                                            whiteSpace: 'nowrap'
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-eye" style={{ marginRight: '0.5rem' }}></i>
+                                                        View Report
+                                                    </button>
+                                                    <button
+                                                        onClick={() => downloadReport(result)}
+                                                        style={{
+                                                            background: '#10b981',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            padding: '0.5rem 1rem',
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            fontWeight: '500',
+                                                            whiteSpace: 'nowrap'
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-download" style={{ marginRight: '0.5rem' }}></i>
+                                                        Download
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Report Viewer Modal */}
+                    {selectedReport && (
+                        <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1000,
+                            padding: '2rem'
+                        }}>
+                            <div style={{
+                                background: 'white',
+                                borderRadius: '12px',
+                                maxWidth: '900px',
+                                width: '100%',
+                                maxHeight: '90vh',
+                                overflow: 'auto',
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                            }}>
+                                <div style={{
+                                    position: 'sticky',
+                                    top: 0,
+                                    background: 'white',
+                                    borderBottom: '1px solid #e5e7eb',
+                                    padding: '1.5rem',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                                        Report: {selectedReport.reportId || selectedReport.fileName}
+                                    </h3>
+                                    <button
+                                        onClick={() => setSelectedReport(null)}
+                                        style={{
+                                            background: '#f3f4f6',
+                                            border: 'none',
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            color: '#374151'
+                                        }}
+                                    >
+                                        <i className="fas fa-times" style={{ marginRight: '0.5rem' }}></i>
+                                        Close
+                                    </button>
+                                </div>
+                                <div style={{ padding: '2rem' }}>
+                                    <pre style={{
+                                        background: '#f9fafb',
+                                        padding: '1.5rem',
+                                        borderRadius: '8px',
+                                        overflow: 'auto',
+                                        fontSize: '12px',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        {JSON.stringify(selectedReport.report.report_data, null, 2)}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
