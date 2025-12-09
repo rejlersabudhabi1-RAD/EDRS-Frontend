@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Helmet } from 'react-helmet-async';
+import API_CONFIG from '../config/api';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -68,7 +69,7 @@ const LoginForm = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/api/v1/auth/login/', {
+            const response = await fetch(API_CONFIG.getEndpoint('LOGIN'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

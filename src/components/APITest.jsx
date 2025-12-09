@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_CONFIG from '../config/api';
 
 const APITest = () => {
     const [result, setResult] = useState('');
@@ -8,13 +9,13 @@ const APITest = () => {
         setLoading(true);
         try {
             // Test health endpoint first
-            const healthResponse = await fetch('http://localhost:8000/api/v1/auth/health/');
+            const healthResponse = await fetch(API_CONFIG.getEndpoint('HEALTH'));
             const healthData = await healthResponse.json();
             
             let resultText = `Health Check: ${healthResponse.status} - ${healthData.message}\n`;
             
             // Test login endpoint
-            const loginResponse = await fetch('http://localhost:8000/api/v1/auth/login/', {
+            const loginResponse = await fetch(API_CONFIG.getEndpoint('LOGIN'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import API_CONFIG from '../config/api';
 
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ const RegisterForm = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/api/v1/auth/register/', {
+            const response = await fetch(API_CONFIG.getEndpoint('REGISTER'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

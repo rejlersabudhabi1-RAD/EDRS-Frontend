@@ -57,7 +57,7 @@ const SuperAdminDashboard = () => {
     const fetchAvailableFeatures = async () => {
         setLoadingFeatures(true);
         try {
-            const response = await fetch('http://localhost:8000/ai-erp/api/users/features/', {
+            const response = await fetch(API_CONFIG.getEndpoint('USER_FEATURES'), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -94,7 +94,7 @@ const SuperAdminDashboard = () => {
         }
         
         try {
-            const response = await fetch('http://localhost:8000/ai-erp/api/users/create/', {
+            const response = await fetch(API_CONFIG.getEndpoint('USER_CREATE'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -430,7 +430,7 @@ const SuperAdminDashboard = () => {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('access_token');
-            await fetch('http://localhost:8000/api/v1/auth/logout/', {
+            await fetch(API_CONFIG.getEndpoint('LOGOUT'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

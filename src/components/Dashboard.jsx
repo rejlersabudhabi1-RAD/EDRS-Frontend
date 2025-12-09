@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_CONFIG from '../config/api';
 import { toast } from 'react-toastify';
 
 const Dashboard = () => {
@@ -30,7 +31,7 @@ const Dashboard = () => {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('access_token');
-            await fetch('http://localhost:8000/api/v1/auth/logout/', {
+            await fetch(API_CONFIG.getEndpoint('LOGOUT'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

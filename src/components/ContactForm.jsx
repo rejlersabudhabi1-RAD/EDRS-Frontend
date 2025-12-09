@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_CONFIG from '../config/api';
 import { toast } from 'react-toastify';
 
 const ContactForm = () => {
@@ -80,7 +81,7 @@ const ContactForm = () => {
             }
 
             // Call the actual backend API endpoint
-            const response = await fetch('http://localhost:8000/ai-erp/api/consultation/submit/', {
+            const response = await fetch(API_CONFIG.getEndpoint('CONSULTATION_SUBMIT'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
