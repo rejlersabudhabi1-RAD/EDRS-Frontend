@@ -37,14 +37,8 @@ const DocumentUploadModule = () => {
         const results = [];
         
         try {
-            // Get authentication token
+            // Get authentication token (optional - API now allows anonymous access)
             const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-            
-            if (!token) {
-                toast.error('Authentication required. Please login.');
-                setProcessing(false);
-                return;
-            }
             
             // Process each file
             for (const file of uploadedFiles) {
@@ -56,11 +50,15 @@ const DocumentUploadModule = () => {
                     
                     toast.info(`Processing: ${file.name}`);
                     
+                    // Build headers conditionally
+                    const headers = {};
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+                    
                     const response = await fetch(API_CONFIG.getEndpoint('DOCUMENT_UPLOAD_REPORT'), {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
+                        headers: headers,
                         body: formData
                     });
                     
