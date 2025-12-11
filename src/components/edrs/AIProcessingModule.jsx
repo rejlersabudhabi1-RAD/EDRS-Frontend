@@ -117,33 +117,6 @@ const AIProcessingModule = () => {
                                 }}></div>
                             </button>
                             <button
-                                onClick={() => navigate('/edrs/document-validation')}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.75rem',
-                                    padding: '0.75rem 1rem',
-                                    background: 'transparent',
-                                    color: '#6b7280',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    textAlign: 'left'
-                                }}
-                            >
-                                <i className="fas fa-shield-alt" style={{ width: '16px', color: '#10b981' }}></i>
-                                <span style={{ flex: 1 }}>Document Validation</span>
-                                <div style={{
-                                    width: '6px',
-                                    height: '6px',
-                                    borderRadius: '50%',
-                                    background: '#10b981'
-                                }}></div>
-                            </button>
-                            <button
                                 onClick={() => navigate('/edrs/document-upload')}
                                 style={{
                                     width: '100%',

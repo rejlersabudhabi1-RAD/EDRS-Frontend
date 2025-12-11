@@ -21,12 +21,16 @@ import APITest from './APITest';
 import LandingPage from './LandingPage';
 import EdrsDashboard from './edrs/EdrsDashboard';
 import PdfToPidModule from './edrs/PdfToPidModule';
-import DocumentValidationModule from './edrs/DocumentValidationModule';
-import DocumentUploadModule from './edrs/DocumentUploadModuleSimple';
+import DocumentCheckerModule from './edrs/DocumentCheckerModule';
 import AIDashboard from './AIDashboard';
 
 import AIProcessingModule from './edrs/AIProcessingModule';
 import ProjectManagementModule from './edrs/ProjectManagementModule';
+
+// CRS Platform Sub-Features
+import ProcessHSEModule from './crs/ProcessHSEModule';
+import CivilStructureModule from './crs/CivilStructureModule';
+import InstrumentationControlModule from './crs/InstrumentationControlModule';
 
 const Routers = () => {
     return (
@@ -124,22 +128,10 @@ const Routers = () => {
                         <PdfToPidModule />
                     </ProtectedRoute>
                 }></Route>
-                <Route path="/edrs/document-validation" element={
-                    <ProtectedRoute>
-                        <DocumentValidationModule />
-                    </ProtectedRoute>
-                }></Route>
-                <Route path="/edrs/document-upload" element={<DocumentUploadModule />}></Route>
+                <Route path="/edrs/document-upload" element={<DocumentCheckerModule />}></Route>
                 
                 {/* Direct Document Upload Route - Allow anonymous access */}
-                <Route path="/document-upload" element={<DocumentUploadModule />}></Route>
-                
-                {/* Direct Document Validation Route */}
-                <Route path="/document-validation" element={
-                    <ProtectedRoute>
-                        <DocumentValidationModule />
-                    </ProtectedRoute>
-                }></Route>
+                <Route path="/document-upload" element={<DocumentCheckerModule />}></Route>
                 
                 {/* Direct PDF to P&ID Route */}
                 <Route path="/pdf-to-pid" element={
@@ -165,6 +157,11 @@ const Routers = () => {
                         <AIDashboard />
                     </ProtectedRoute>
                 }></Route>
+
+                {/* CRS Platform Sub-Features */}
+                <Route path="/crs/process-hse" element={<ProcessHSEModule />}></Route>
+                <Route path="/crs/civil-structure" element={<CivilStructureModule />}></Route>
+                <Route path="/crs/instrumentation-control" element={<InstrumentationControlModule />}></Route>
 
                 
                 <Route path="*" element={<Error404 />}></Route>

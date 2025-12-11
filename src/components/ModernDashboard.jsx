@@ -53,8 +53,7 @@ const ModernDashboard = () => {
             subsections: [
                 { id: 'ai-dashboard', title: 'AI Dashboard', path: '/ai-dashboard', description: 'Real-time AI service monitoring and OpenAI integration status' },
                 { id: 'pdf-to-pid', title: 'PFD to P&ID', path: '/pdf-to-pid', description: 'Convert Process Flow Diagrams (PFD) to intelligent P&ID diagrams with GPT-4 Vision' },
-                { id: 'document-upload', title: 'Document Upload', path: '/document-upload', description: 'AI-powered document classification and processing' },
-                { id: 'document-validation', title: 'Document Validation', path: '/document-validation', description: 'Comprehensive AI validation of engineering documents' }
+                { id: 'document-upload', title: 'Document Checker', path: '/document-upload', description: 'AI-powered document classification and processing' }
             ]
         },
         csr: {
@@ -62,7 +61,35 @@ const ModernDashboard = () => {
             icon: 'fas fa-leaf',
             color: '#059669',
             description: 'Corporate Responsibility Solutions Platform',
-            subsections: []
+            subsections: [
+                {
+                    id: 'process-hse',
+                    title: 'Process and HSE',
+                    path: '/crs/process-hse',
+                    icon: 'fas fa-hard-hat',
+                    color: '#ef4444',
+                    description: 'Health, Safety & Environment management for process operations',
+                    features: ['Safety Audits', 'HSE Compliance', 'Risk Assessment', 'Incident Management']
+                },
+                {
+                    id: 'civil-structure',
+                    title: 'Civil and Structure',
+                    path: '/crs/civil-structure',
+                    icon: 'fas fa-building',
+                    color: '#3b82f6',
+                    description: 'Civil engineering and structural integrity monitoring',
+                    features: ['Structural Analysis', 'Foundation Design', 'Load Calculations', 'Material Compliance']
+                },
+                {
+                    id: 'instrumentation-control',
+                    title: 'I&C',
+                    path: '/crs/instrumentation-control',
+                    icon: 'fas fa-microchip',
+                    color: '#8b5cf6',
+                    description: 'Instrumentation & Control systems management',
+                    features: ['Control Systems', 'Sensor Monitoring', 'Automation', 'Calibration Management']
+                }
+            ]
         },
         management: {
             title: 'Super Admin Control Center',
@@ -160,7 +187,7 @@ const ModernDashboard = () => {
     // Document Upload data
     const documentUploadModule = {
         id: 'document-upload',
-        title: 'Document Upload',
+        title: 'Document Checker',
         description: 'Intelligent document processing and storage system with AI-powered classification',
         icon: 'fas fa-cloud-upload-alt',
         color: '#f59e0b',
@@ -1043,7 +1070,7 @@ const ModernDashboard = () => {
                                 <div>
                                     <h2 className="section-title">
                                         <i className="fas fa-cloud-upload-alt" style={{ color: '#f59e0b', marginRight: '1rem' }}></i>
-                                        Document Upload - EDRS Platform
+                                        Document Checker - EDRS Platform
                                     </h2>
                                     <p className="section-subtitle">
                                         Intelligent document processing and storage system with AI-powered classification and security
@@ -1069,7 +1096,7 @@ const ModernDashboard = () => {
 
                             {/* Quick Upload Interface */}
                             <div className="modules-section">
-                                <h3 className="modules-title">Quick Document Upload</h3>
+                                <h3 className="modules-title">Quick Document Checker</h3>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
                                     {/* Upload Zone */}
                                     <div style={{
@@ -1251,27 +1278,193 @@ const ModernDashboard = () => {
                                         CRS Platform - Corporate Responsibility Solutions
                                     </h2>
                                     <p className="section-subtitle">
-                                        Corporate Social Responsibility platform - Features coming soon
+                                        Comprehensive engineering discipline management with HSE compliance and quality control
                                     </p>
                                 </div>
                             </div>
-                            <div className="coming-soon-container" style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                minHeight: '300px',
-                                background: 'white',
-                                borderRadius: '12px',
-                                border: '1px solid #e5e7eb',
-                                flexDirection: 'column',
-                                gap: '1rem'
+
+                            {/* CRS Sub-Features Grid */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
+                                {dashboardSections.csr.subsections.map((subsection) => (
+                                    <div
+                                        key={subsection.id}
+                                        style={{
+                                            background: 'white',
+                                            borderRadius: '16px',
+                                            padding: '2rem',
+                                            border: '1px solid #e5e7eb',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            transition: 'all 0.3s ease',
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                            overflow: 'hidden'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-4px)';
+                                            e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                                        }}
+                                        onClick={() => {
+                                            if (subsection.path) {
+                                                navigate(subsection.path);
+                                            } else {
+                                                toast.info(`${subsection.title} module is under development`);
+                                            }
+                                        }}
+                                    >
+                                        {/* Background Gradient */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 0,
+                                            width: '150px',
+                                            height: '150px',
+                                            background: `radial-gradient(circle, ${subsection.color}15 0%, transparent 70%)`,
+                                            pointerEvents: 'none'
+                                        }} />
+
+                                        {/* Icon Header */}
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                            <div style={{
+                                                width: '56px',
+                                                height: '56px',
+                                                borderRadius: '12px',
+                                                background: `linear-gradient(135deg, ${subsection.color}, ${subsection.color}dd)`,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                boxShadow: `0 4px 12px ${subsection.color}40`
+                                            }}>
+                                                <i className={subsection.icon} style={{ color: 'white', fontSize: '24px' }}></i>
+                                            </div>
+                                            <span style={{
+                                                padding: '0.25rem 0.75rem',
+                                                borderRadius: '12px',
+                                                background: `${subsection.color}15`,
+                                                color: subsection.color,
+                                                fontSize: '11px',
+                                                fontWeight: '600',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.05em'
+                                            }}>
+                                                Active
+                                            </span>
+                                        </div>
+
+                                        {/* Content */}
+                                        <h3 style={{ 
+                                            fontSize: '20px', 
+                                            fontWeight: '700', 
+                                            color: '#1f2937', 
+                                            marginBottom: '0.5rem',
+                                            lineHeight: '1.3'
+                                        }}>
+                                            {subsection.title}
+                                        </h3>
+                                        <p style={{ 
+                                            fontSize: '14px', 
+                                            color: '#6b7280', 
+                                            marginBottom: '1.5rem',
+                                            lineHeight: '1.6'
+                                        }}>
+                                            {subsection.description}
+                                        </p>
+
+                                        {/* Features List */}
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <div style={{ fontSize: '12px', fontWeight: '600', color: '#374151', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                Key Features
+                                            </div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                {subsection.features.map((feature, idx) => (
+                                                    <span
+                                                        key={idx}
+                                                        style={{
+                                                            padding: '0.375rem 0.75rem',
+                                                            borderRadius: '6px',
+                                                            background: '#f3f4f6',
+                                                            color: '#4b5563',
+                                                            fontSize: '12px',
+                                                            fontWeight: '500',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.375rem'
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-check-circle" style={{ fontSize: '10px', color: subsection.color }}></i>
+                                                        {feature}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Action Button */}
+                                        <button
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.75rem 1.5rem',
+                                                borderRadius: '8px',
+                                                background: subsection.color,
+                                                color: 'white',
+                                                border: 'none',
+                                                fontWeight: '600',
+                                                fontSize: '14px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '0.5rem',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1.02)';
+                                                e.currentTarget.style.boxShadow = `0 4px 12px ${subsection.color}60`;
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'scale(1)';
+                                                e.currentTarget.style.boxShadow = 'none';
+                                            }}
+                                        >
+                                            <i className="fas fa-external-link-alt"></i>
+                                            Launch Module
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* CRS Platform Stats */}
+                            <div style={{ 
+                                marginTop: '2rem', 
+                                padding: '1.5rem',
+                                background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                                borderRadius: '16px',
+                                color: 'white'
                             }}>
-                                <i className="fas fa-leaf" style={{ fontSize: '48px', color: '#059669', opacity: '0.7' }}></i>
-                                <h3 style={{ color: '#374151', margin: 0 }}>CRS Platform</h3>
-                                <p style={{ color: '#6b7280', margin: 0, textAlign: 'center' }}>
-                                    Corporate Social Responsibility features are under development.<br/>
-                                    This section will include sustainability tracking, ESG reporting, and compliance management.
-                                </p>
+                                <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <i className="fas fa-chart-line"></i>
+                                    CRS Platform Overview
+                                </h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '0.25rem' }}>3</div>
+                                        <div style={{ fontSize: '13px', opacity: 0.9 }}>Active Disciplines</div>
+                                    </div>
+                                    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '0.25rem' }}>12</div>
+                                        <div style={{ fontSize: '13px', opacity: 0.9 }}>Core Features</div>
+                                    </div>
+                                    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '0.25rem' }}>100%</div>
+                                        <div style={{ fontSize: '13px', opacity: 0.9 }}>Compliance Ready</div>
+                                    </div>
+                                    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '0.25rem' }}>24/7</div>
+                                        <div style={{ fontSize: '13px', opacity: 0.9 }}>Monitoring</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : activeSection === 'management' ? (

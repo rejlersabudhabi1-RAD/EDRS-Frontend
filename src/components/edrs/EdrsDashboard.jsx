@@ -41,18 +41,8 @@ const EdrsDashboard = () => {
             status: 'active'
         },
         {
-            id: 'document-validation',
-            title: 'Document Validation',
-            description: 'Automated validation of engineering documents against industry standards',
-            icon: 'fas fa-shield-alt',
-            color: '#10b981',
-            path: '/edrs/document-validation',
-            stats: { validated: '1,523', compliance: '97.2%', issues: '23' },
-            status: 'active'
-        },
-        {
             id: 'document-upload',
-            title: 'Document Upload',
+            title: 'Document Checker',
             description: 'Intelligent document processing and storage system',
             icon: 'fas fa-cloud-upload-alt',
             color: '#f59e0b',
